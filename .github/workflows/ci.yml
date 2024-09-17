@@ -1,0 +1,61 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+ 
+  build_docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build backend Docker image
+        run: |
+          docker build -t backend-api ./api
+
+      - name: Build frontend Docker image
+        run: |
+          docker build -t frontend-webapp ./webapp
+  
+
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install backend dependencies
+        run: |
+          cd api
+          npm install
+
+      - name: Run backend tests
+        run: |
+          cd api
+          npm test
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install frontend dependencies
+        run: |
+          cd webapp
+          npm install
+
+      - name: Build frontend
+        run: |
+          cd webapp
+          npm run build

@@ -1,0 +1,35 @@
+name: Deploy to Elastic Beanstalk
+
+on:
+  push:
+    branches:
+      - main  # This triggers deployment on push to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: |
+          npm install
+          npm run build  # Build step for your frontend (if necessary)
+
+      - name: Deploy to Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v20
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: ecommerce-platform  # Your Elastic Beanstalk application name
+          environment_name: Ecommerce-platform-env  # Your Elastic Beanstalk environment name
+          version_label: v-${{ github.sha }}  # Use the commit SHA as the version label
+          region: ca-central-1  # Your AWS region
+ 
